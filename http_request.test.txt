@@ -1,0 +1,6 @@
+http://localhost:3001/api/signup
+Content-Type: application/json
+{
+  "email": "bbb",
+  "password": "ccc"
+}

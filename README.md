@@ -1,2 +1,9 @@
 # Kyudo_Video_Repository
-React+Node+MySQL
+Vue+Express+SQLite+Redis
+
+frontend (localhost:3000)
+$ yarn dev
+
+backend (localhost:3001)
+$ redis-server
+$ yarn dev
