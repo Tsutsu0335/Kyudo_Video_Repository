@@ -24,9 +24,15 @@ router.post('/signup', (req, res) => {
             return res.status(400).json({ message: `登録に失敗しました。${err}` });
         }
 
-        req.session.regenerate();
-        req.session.userId = email;
-        res.status(201).json({ message: 'ユーザー登録完了！' });
+        req.session.regenerate((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'セッションの生成に失敗しました。' });
+            }
+
+            req.session.userId = email;
+            res.status(201).json({ message: 'ユーザー登録完了！' });
+        });
+
     });
 });
 
@@ -46,9 +52,15 @@ router.post('/login', (req, res) => {
             return res.status(400).json({ message: 'パスワードが間違っています。' });
         }
 
-        req.session.regenerate();
-        req.session.userId = email;
-        res.status(200).json({ message: 'ログイン成功！' });
+        req.session.regenerate((err) => {
+            if (err) {
+                return res.status(500).json({ message: 'セッションの生成に失敗しました。' });
+            }
+
+            req.session.userId = email;
+            res.status(200).json({ message: 'ログイン成功！' });
+        });
+
     });
 });
 
