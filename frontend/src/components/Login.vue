@@ -11,13 +11,24 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 const email = ref('');
 const password = ref('');
 const router = useRouter();
+
+onMounted(async () => {
+  try {
+    await axios.get('http://localhost:3001/api/check', {
+      withCredentials: true,
+    });
+    router.push('/mypage');
+  } catch (error) {
+    console.error('error:', error);
+  }
+});
 
 const login = async () => {
   try {
@@ -32,7 +43,7 @@ const login = async () => {
       withCredentials: true,
     });
     alert(response.data.message);
-    router.push('/protected');
+    router.push('/mypage');
   } catch (error) {
     alert('ログインに失敗しました');
   }

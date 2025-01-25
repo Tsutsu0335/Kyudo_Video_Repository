@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../components/Login.vue';
-import Signup from '../components/Signup.vue';
-import Protected from '../components/Protected.vue';
+import SignUp from '../components/SignUp.vue';
+import MainPage from '../components/MainPage.vue';
 
 const routes = [
-    { path: "/", component: Login},
-    { path: "/signup", component: Signup },
-    { path: "/protected", component: Protected},
+    { path: "/", name: "Login", component: Login },
+    { path: "/signup", name: "SignUp", component: SignUp },
+    { path: "/mypage", name: "MyPage", component: MainPage },
 ];
 
 const router = createRouter({

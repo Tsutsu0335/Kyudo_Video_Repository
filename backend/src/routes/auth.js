@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
+const isAuthenticated = require("../middleware/authMiddleware");
 
 const db = new sqlite3.Database('../database/users.db');
 
@@ -36,7 +37,6 @@ router.post('/signup', (req, res) => {
     });
 });
 
-// ログイン
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
 
@@ -70,9 +70,18 @@ router.post('/logout', (req, res) => {
             return res.status(500).json({ message: 'ログアウト失敗' });
         }
 
-        res.clearCookie('connect.sld');
+        res.clearCookie('userId');
         res.status(200).json({ message: 'ログアウト成功' });
     });
 });
+
+router.get("/check", isAuthenticated, (req, res) => {
+    res.status(200).json({ message: 'authenticated' });
+});
+
+router.get("/user", isAuthenticated, (req, res) => {
+    res.status(200).json({ email: req.session.userId });
+});
+
 
 module.exports = router;

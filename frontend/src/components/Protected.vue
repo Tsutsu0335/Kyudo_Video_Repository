@@ -16,7 +16,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        await axios.get('http://localhost:3001/protected/main', {
+        await axios.get('http://localhost:3001/api/check', {
           withCredentials: true,
         });
       } catch (error) {

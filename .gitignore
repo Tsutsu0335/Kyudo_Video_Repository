@@ -2,3 +2,4 @@ node_modules/
 /database/users.db
 .vscode
 .env
+dump.rdb
