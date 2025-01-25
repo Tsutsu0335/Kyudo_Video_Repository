@@ -1,5 +1,5 @@
 # Kyudo_Video_Repository
-姿勢を確認するためのシステムを開発したいリポジトリ
+姿勢を確認するためのシステムを開発したいリポジトリ  
 骨格推定まで入れたい
 Vue+Express+SQLite+Redis
 
