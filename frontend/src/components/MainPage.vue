@@ -1,27 +1,29 @@
 <template>
   <div>
-    <h1>Welcome, {{ userEmail }}</h1>
+    <h2>ログイン中のユーザー: {{ userEmail }}</h2>
     <button @click="logout">Logout</button>
     <nav>
-      <router-link to="/record">Record Posture</router-link><br>
-      <router-link to="/public-videos">Public Videos</router-link><br>
-      <router-link to="/my-recordings">My Recordings</router-link><br>
-      <router-link to="/real-time-posture">Real-Time Posture</router-link><br>
+      <router-link to="/mypage/record">Record Posture</router-link><br>
+      <router-link to="/mypage/public-videos">Public Videos</router-link><br>
+      <router-link to="/mypage/my-videos">My Recordings</router-link><br>
+      <router-link to="/mypage/real-time-posture">Real-Time Posture</router-link><br>
     </nav>
   </div>
+  <router-view></router-view>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 
 const router = useRouter();
 const userEmail = ref('');
 
-onMounted(async () => {
+// 認証済みかの確認 (beforeCreate)
+(async () => {
   try {
-    await axios.get('http://localhost:3001/api/check', {
+    await axios.get('http://localhost:3001/auth/check', {
       withCredentials: true,
     });
 
@@ -29,13 +31,13 @@ onMounted(async () => {
     userEmail.value = response.data.email;
   } catch (error) {
     console.error('error:', error);
-    router.push('/'); // 認証されていない場合はログイン画面へ
+    router.push('/');
   }
-});
+})();
 
 const logout = async () => {
   try {
-    await axios.post('http://localhost:3001/api/logout', {}, { withCredentials: true });
+    await axios.post('http://localhost:3001/auth/logout', {}, { withCredentials: true });
     router.push('/');
   } catch (error) {
     console.error('Failed to logout:', error);

@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 
@@ -19,16 +19,17 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 
-onMounted(async () => {
+// 認証済みかの確認
+(async () => {
   try {
-    await axios.get('http://localhost:3001/api/check', {
+    await axios.get('http://localhost:3001/auth/check', {
       withCredentials: true,
     });
     router.push('/mypage');
   } catch (error) {
     console.error('error:', error);
   }
-});
+})();
 
 const signup = async () => {
   try {
@@ -36,7 +37,7 @@ const signup = async () => {
       email: email.value,
       password: password.value,
     }
-    const response = await axios.post('http://localhost:3001/api/signup', body, {
+    const response = await axios.post('http://localhost:3001/auth/signup', body, {
       headers: {
         'Content-Type': 'application/json'
       },

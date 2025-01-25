@@ -1,5 +1,7 @@
+// Redisとの接続の設定
+
 const session = require("express-session");
-const {RedisStore} = require("connect-redis");
+const { RedisStore } = require("connect-redis");
 const { createClient } = require("redis");
 require("dotenv").config();
 
@@ -20,9 +22,9 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false,
+        secure: false, // httpsに対応するときにtrueに変更
         sameSite: 'lax',
-        maxAge: 6 * 60 * 60 * 1000,
+        maxAge: 6 * 60 * 60 * 1000, // 6h
     },
     rolling: true,
 });
