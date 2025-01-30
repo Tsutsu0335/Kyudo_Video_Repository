@@ -18,6 +18,14 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
   password TEXT
 )`);
 
+// isPublic : true = 1, false = 0
+db.run(`CREATE TABLE IF NOT EXISTS videos (
+  video_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  filename TEXT NOT NULL UNIQUE,
+  userId TEXT NOT NULL,
+  isPublic INTEGER NOT NULL
+)`);
+
 // フロントエンドのcors
 app.use(cors({
     origin: "http://localhost:3000",
