@@ -7,8 +7,9 @@ const isAuthenticated = require("../middlewares/authMiddleware");
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+require("dotenv").config();
 
-const db = new sqlite3.Database('../database/users.db');
+const db = new sqlite3.Database(process.env.DB_PATH);
 
 const uploadDir = path.join(__dirname, '../../videos/');
 if (!fs.existsSync(uploadDir)) {

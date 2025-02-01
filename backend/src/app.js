@@ -5,11 +5,12 @@ const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api");
 const cookieParser = require("cookie-parser");
 const sqlite3 = require('sqlite3').verbose();
+require("dotenv").config();
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.SERVER_PORT;
 
-const db = new sqlite3.Database('../database/users.db');
+const db = new sqlite3.Database(process.env.DB_PATH);
 
 // DBの初期化
 db.run(`CREATE TABLE IF NOT EXISTS users (
@@ -28,7 +29,7 @@ db.run(`CREATE TABLE IF NOT EXISTS videos (
 
 // フロントエンドのcors
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
     credentials: true,
 }));
 
@@ -46,5 +47,5 @@ app.get("/", (req, res) => {
 })
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`Server is running on http://${process.env.SERVER_HOST}:${PORT}`);
 })

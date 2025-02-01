@@ -5,8 +5,9 @@ const bcrypt = require('bcryptjs');
 const sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
 const isAuthenticated = require("../middlewares/authMiddleware");
+require("dotenv").config();
 
-const db = new sqlite3.Database('../database/users.db');
+const db = new sqlite3.Database(process.env.DB_PATH);
 
 // 登録
 router.post('/signup', (req, res) => {
