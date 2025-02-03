@@ -150,7 +150,9 @@ export default defineComponent({
       if (recordedChunks.value.length === 0) return;
       const blob = new Blob(recordedChunks.value, { type: 'video/webm' });
       const formData = new FormData();
-      formData.append('video', blob, `recorded_${Date.now()}.webm`);
+      const filename = `recorded_${Date.now()}.webm`
+      formData.append('video', blob, filename);
+      formData.append('title', String(filename)); // ファイル名を任意に指定できるようにしたい
       formData.append('isPublic', String(isPublic.value));
 
       try {

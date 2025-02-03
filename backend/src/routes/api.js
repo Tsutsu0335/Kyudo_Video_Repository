@@ -1,5 +1,4 @@
 // データ取得関連のapi
-
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
@@ -21,7 +20,7 @@ const storage = multer.diskStorage({
     destination: uploadDir,
     filename: (req, file, cb) => {
         const ext = path.extname(file.originalname);
-        cb(null, `${file.originalname}${ext}`);
+        cb(null, `${file.originalname}`);
     },
 });
 const upload = multer({ storage });
@@ -31,18 +30,51 @@ router.get("/user", isAuthenticated, (req, res) => {
     res.status(200).json({ email: req.session.userId });
 });
 
-router.post('/upload', upload.single('video'), (req, res) => {
+// 自分のwebmの情報取得
+router.get("/myvideos", isAuthenticated, (req, res) => {
+    const query = "SELECT videoId AS id, filename, title, userId, isPublic FROM videos WHERE userId = ?";
+    db.all(query, [req.session.userId], (err, rows) => {
+        if (err) {
+            console.log('db error:', err.message);
+            return res.status(500).json({ error: 'DB ERROR' });
+        }
+        res.status(200).json(rows);
+    }); 
+});
+
+// webmへのアクセス
+router.get('/videos/:filename', isAuthenticated, (req, res) => {
+    const query = "SELECT userId, isPublic FROM videos WHERE filename = ?";
+    db.get(query, [req.params.filename], (err, row) => {
+        if (err) {
+            console.log('db error:', err.message);
+            return res.status(500).json({ error: 'DB ERROR' });
+        }
+
+        // 閲覧権限があるかどうか
+        if (row.userId !== req.session.userId && row.isPublic === 0) {
+            return res.status(403).json({ error: 'ERROR' });
+        }
+        
+        const filepath = path.join(uploadDir, req.params.filename);
+        res.sendFile(filepath);
+    })
+});
+
+// webmのアップロード
+router.post('/upload', isAuthenticated, upload.single('video'), (req, res) => {
     if (!req.file) {
         res.status(200).json({ message: 'video data is not found' });    
     }
 
     const filename = req.file.originalname;
+    const title = req.body.title;
     const userId = req.session.userId;
     const isPublicFlag = req.body.isPublic === 'true' ? 1 : 0;
 
     db.run(
-        'INSERT INTO videos (filename, userId, isPublic) VALUES (?, ?, ?)',
-        [filename, userId, isPublicFlag],
+        'INSERT INTO videos (filename, title, userId, isPublic) VALUES (?, ?, ?, ?)',
+        [filename, title, userId, isPublicFlag],
         function (err) {
             if (err) {
                 console.error('データベース保存エラー:', err.message);

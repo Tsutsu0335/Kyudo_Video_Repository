@@ -3,6 +3,7 @@
     <h1>自分の録画</h1>
     <div v-for="video in videos" :key="video.id">
       <p>{{ video.title }}</p>
+      <video :src="getVideoURL(video.filename)" controls width="320"></video>
       <button @click="toggleVisibility(video.id)">
         {{ video.isPublic ? '非公開にする' : '公開にする' }}
       </button>
@@ -16,8 +17,9 @@ import axios from 'axios';
 
 type Video = {
   id: number;
+  userId: string;
   title: string;
-  url: string;
+  filename: string;
   isPublic: boolean;
 };
 
@@ -26,12 +28,12 @@ export default defineComponent({
     const videos = ref<Video[]>([]);
 
     const fetchVideos = async () => {
-      // /api/videos とかへのクエリ //
       try {
-        videos.value = [
-          { id: 1, title: '動画 1', url: 'url1', isPublic: true },
-          { id: 2, title: '動画 2', url: 'url2', isPublic: false }
-        ];
+        const res = await axios.get('http://localhost:3001/api/myvideos', {
+          withCredentials: true,
+        });
+        videos.value = res.data;
+        console.log(videos.value);
       } catch (err) {
         console.error(err)
       }
@@ -45,12 +47,16 @@ export default defineComponent({
       }
     };
 
+    const getVideoURL = (filename: string) => {
+      return `http://localhost:3001/api/videos/${filename}`;
+    };
+
 
     onMounted(() => {
       fetchVideos();
     });
 
-    return { videos, toggleVisibility };
+    return { videos, toggleVisibility, getVideoURL };
   }
 });
 </script>
