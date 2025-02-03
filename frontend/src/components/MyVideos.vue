@@ -29,7 +29,7 @@ export default defineComponent({
 
     const fetchVideos = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/api/myvideos', {
+        const res = await axios.get('http://localhost:3001/api/videos/myvideos', {
           withCredentials: true,
         });
         videos.value = res.data;
@@ -40,10 +40,24 @@ export default defineComponent({
     };
 
     const toggleVisibility = async (id: number) => {
-      // /api/visible とかへのクエリ //
       const video = videos.value.find(v => v.id === id);
-      if (video) {
-        video.isPublic = !video.isPublic;
+      if (video === undefined) {
+        return;
+      }
+
+      const body = {
+        videoId: video.id,
+        isPublic: !video.isPublic,
+      };
+
+      try {
+        const res = await axios.post("http://localhost:3001/api/videos/setvisibility", body, {
+          withCredentials: true,
+        });
+        console.log(res.data);
+        video.isPublic = res.data.result;
+      } catch (err) {
+        console.error(err);
       }
     };
 

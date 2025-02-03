@@ -156,7 +156,7 @@ export default defineComponent({
       formData.append('isPublic', String(isPublic.value));
 
       try {
-        await axios.post('http://localhost:3001/api/upload', formData, {
+        await axios.post('http://localhost:3001/api/videos/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         });
