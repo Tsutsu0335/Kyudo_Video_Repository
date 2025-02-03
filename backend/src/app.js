@@ -5,8 +5,6 @@ const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api");
 const cookieParser = require("cookie-parser");
 const sqlite3 = require('sqlite3').verbose();
-const isAuthenticated = require("./middlewares/authMiddleware");
-const path = require('path');
 require("dotenv").config();
 
 const app = express();
@@ -23,7 +21,7 @@ db.run(`CREATE TABLE IF NOT EXISTS users (
 
 // isPublic : true = 1, false = 0
 db.run(`CREATE TABLE IF NOT EXISTS videos (
-  videoId INTEGER PRIMARY KEY AUTOINCREMENT,
+  videoId INTEGER PRIMARY KEY,
   filename TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
   userId TEXT NOT NULL,

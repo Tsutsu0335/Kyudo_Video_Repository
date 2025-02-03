@@ -1,5 +1,5 @@
 node_modules/
-/database/db.sqlite3
+database/db.sqlite3
 .vscode
 .env
 dump.rdb

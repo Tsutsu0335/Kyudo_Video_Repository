@@ -5,7 +5,7 @@ const isAuthenticated = require("../middlewares/authMiddleware");
 const videosRoutes = require("../api/videos");
 require("dotenv").config();
 
-router.use("/videos", videosRoutes);
+router.use("/videos", isAuthenticated, videosRoutes);
 
 // ユーザデータの取得
 router.get("/user", isAuthenticated, (req, res) => {

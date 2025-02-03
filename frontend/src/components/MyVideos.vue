@@ -7,6 +7,9 @@
       <button @click="toggleVisibility(video.id)">
         {{ video.isPublic ? '非公開にする' : '公開にする' }}
       </button>
+      <button @click="deleteVideo(video.id)">
+        Delete
+      </button>
     </div>
   </div>
 </template>
@@ -42,6 +45,7 @@ export default defineComponent({
     const toggleVisibility = async (id: number) => {
       const video = videos.value.find(v => v.id === id);
       if (video === undefined) {
+        console.log("target video is not found");
         return;
       }
 
@@ -54,8 +58,28 @@ export default defineComponent({
         const res = await axios.post("http://localhost:3001/api/videos/setvisibility", body, {
           withCredentials: true,
         });
-        console.log(res.data);
         video.isPublic = res.data.result;
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const deleteVideo = async (id: number) => {
+      const video = videos.value.find(v => v.id === id);
+      if (video === undefined) {
+        return;
+      }
+
+      try {
+        const body = {
+          videoId: video.id,
+        };
+
+        axios.post("http://localhost:3001/api/videos/delete", body, {
+          withCredentials: true,
+        }).then(() => {
+          fetchVideos()
+        });
       } catch (err) {
         console.error(err);
       }
@@ -65,12 +89,14 @@ export default defineComponent({
       return `http://localhost:3001/api/videos/${filename}`;
     };
 
+    
+
 
     onMounted(() => {
       fetchVideos();
     });
 
-    return { videos, toggleVisibility, getVideoURL };
+    return { videos, toggleVisibility, getVideoURL, deleteVideo };
   }
 });
 </script>

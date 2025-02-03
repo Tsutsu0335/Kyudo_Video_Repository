@@ -1,8 +1,7 @@
-// データ取得関連のapi
+// 映像関連のapi
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const router = express.Router();
-const isAuthenticated = require("../middlewares/authMiddleware");
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -26,7 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // 自分のwebmの情報取得
-router.get("/myvideos", isAuthenticated, (req, res) => {
+router.get("/myvideos", (req, res) => {
     const query = "SELECT videoId AS id, filename, title, userId, isPublic FROM videos WHERE userId = ?";
     db.all(query, [req.session.userId], (err, rows) => {
         if (err) {
@@ -38,7 +37,7 @@ router.get("/myvideos", isAuthenticated, (req, res) => {
 });
 
 // webmへのアクセス
-router.get('/:filename', isAuthenticated, (req, res) => {
+router.get('/:filename', (req, res) => {
     // videoid検索に変えたい
     const query = "SELECT userId, isPublic FROM videos WHERE filename = ?";
     db.get(query, [req.params.filename], (err, row) => {
@@ -57,7 +56,41 @@ router.get('/:filename', isAuthenticated, (req, res) => {
     })
 });
 
-router.post('/setvisibility', isAuthenticated, (req, res) => {
+router.post('/delete', (req, res) => {
+    const query = "SELECT userId, filename FROM videos WHERE videoId = ?";
+    let filename;
+    db.serialize(() => {
+        db.get(query, [req.body.videoId], (err, row) => {
+            if (err) {
+                console.log('db error:', err.message);
+                return res.status(500).json({ error: 'DB ERROR' });
+            }
+
+            // 編集権限があるかどうか
+            if (row.userId !== req.session.userId) {
+                return res.status(403).json({ error: 'ERROR' });
+            }
+
+            filename = row.filename;
+        });
+
+        db.run("DELETE FROM videos WHERE videoId = ?", [req.body.videoId], (err) => {
+            if (err) {
+                console.log('db error:', err.message);
+                return res.status(500).json({ error: 'DB ERROR' });
+            }
+
+            try {
+                fs.unlinkSync(path.join(uploadDir, filename));
+            } catch (err) {
+                console.err(err);
+            }
+            res.status(200).json({ message: "deleted" });
+        });
+    });
+});
+
+router.post('/setvisibility', (req, res) => {
     const query = "SELECT userId FROM videos WHERE videoId = ?";
     db.serialize(() => {
         db.get(query, [req.body.videoId], (err, row) => {
@@ -85,7 +118,7 @@ router.post('/setvisibility', isAuthenticated, (req, res) => {
 });
 
 // webmのアップロード
-router.post('/upload', isAuthenticated, upload.single('video'), (req, res) => {
+router.post('/upload', upload.single('video'), (req, res) => {
     if (!req.file) {
         res.status(200).json({ message: 'video data is not found' });
     }
