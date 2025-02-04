@@ -13,12 +13,17 @@
   
     <div v-if="videoPreview" class="upload-section">
       <label>
-        公開設定
+        公開設定: 
         <select v-model="isPublic">
           <option :value="true">公開</option>
           <option :value="false">非公開</option>
         </select>
       </label>
+      <label>
+        タイトル: 
+        <input type="text" v-model="videoTitle" placeholder="pleass input title..." />
+      </label>
+      <br>
       <button @click="uploadVideo">upload video</button>
     </div>
   </div>
@@ -42,6 +47,8 @@ export default defineComponent({
     const videoPreview = ref<string | null>(null);
     const isRecording = ref(false);
     const isPublic = ref(false); 
+    const videoTitle = ref<string>("");
+    const date = new Date();
 
     const setupCamera = async () => {
       if (!videoElement.value) return;
@@ -116,10 +123,15 @@ export default defineComponent({
       detect();
     };
 
+    const getTime = () => {
+      return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "-" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds(); 
+    };
+
     const startRecording = () => {
       if (!canvasElement.value) return;
 
       recordedChunks.value = [];
+      videoTitle.value = getTime();
 
       const stream = canvasElement.value.captureStream(30); // 30fps
       mediaRecorder.value = new MediaRecorder(stream, {
@@ -146,13 +158,14 @@ export default defineComponent({
       isRecording.value = false;
     };
 
+    // 入力されたファイル名のチェックを実装できていない
     const uploadVideo = async () => {
       if (recordedChunks.value.length === 0) return;
       const blob = new Blob(recordedChunks.value, { type: 'video/webm' });
       const formData = new FormData();
       const filename = `recorded_${Date.now()}.webm`
       formData.append('video', blob, filename);
-      formData.append('title', String(filename)); // ファイル名を任意に指定できるようにしたい
+      formData.append('title', videoTitle.value);
       formData.append('isPublic', String(isPublic.value));
 
       try {
@@ -190,6 +203,7 @@ export default defineComponent({
       videoPreview,
       isRecording,
       isPublic,
+      videoTitle,
     };
   },
 });

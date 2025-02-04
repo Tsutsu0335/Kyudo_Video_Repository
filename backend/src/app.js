@@ -25,8 +25,12 @@ db.run(`CREATE TABLE IF NOT EXISTS videos (
   filename TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
   userId TEXT NOT NULL,
-  isPublic INTEGER NOT NULL
+  isPublic INTEGER NOT NULL,
+  foreign key (userId) references users(email)
 )`);
+
+// 外部キーの有効化
+db.run(`PRAGMA foreign_keys=true`);
 
 // フロントエンドのcors
 app.use(cors({
@@ -41,15 +45,12 @@ app.use(sessionMiddleware);
 
 app.use("/auth", authRoutes);
 app.use("/api", apiRoutes);
-app.use("/videos", express.static("../videos"));
 
 app.get("/", (req, res) => {
-    console.log(`GET Request: ${req.query}`);
-    res.send("SERVER IS RUNNING");
-})
-
-
+  console.log(`GET Request: ${req.query}`);
+  res.send("SERVER IS RUNNING");
+});
 
 app.listen(PORT, () => {
-    console.log(`Server is running on http://${process.env.SERVER_HOST}:${PORT}`);
-})
+  console.log(`Server is running on http://${process.env.SERVER_HOST}:${PORT}`);
+});

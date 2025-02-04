@@ -26,7 +26,7 @@ const upload = multer({ storage });
 
 // 自分のwebmの情報取得
 router.get("/myvideos", (req, res) => {
-    const query = "SELECT videoId AS id, filename, title, userId, isPublic FROM videos WHERE userId = ?";
+    const query = "SELECT videoId AS id, title, userId, isPublic FROM videos WHERE userId = ?";
     db.all(query, [req.session.userId], (err, rows) => {
         if (err) {
             console.log('db error:', err.message);
@@ -36,11 +36,21 @@ router.get("/myvideos", (req, res) => {
     });
 });
 
+router.get("/publicvideos", (req, res) => {
+    const query = "SELECT videoId AS id, title, userId FROM videos WHERE isPublic = 1";
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.log('db error:', err.message);
+            return res.status(500).json({ error: 'DB ERROR' });
+        }
+        res.status(200).json(rows);
+    });
+});
+
 // webmへのアクセス
-router.get('/:filename', (req, res) => {
-    // videoid検索に変えたい
-    const query = "SELECT userId, isPublic FROM videos WHERE filename = ?";
-    db.get(query, [req.params.filename], (err, row) => {
+router.get('/:id', (req, res) => {
+    const query = "SELECT userId, filename, isPublic FROM videos WHERE videoId = ?";
+    db.get(query, [req.params.id], (err, row) => {
         if (err) {
             console.log('db error:', err.message);
             return res.status(500).json({ error: 'DB ERROR' });
@@ -51,9 +61,39 @@ router.get('/:filename', (req, res) => {
             return res.status(403).json({ error: 'ERROR' });
         }
 
-        const filepath = path.join(uploadDir, req.params.filename);
+        const filepath = path.join(uploadDir, row.filename);
         res.sendFile(filepath);
     })
+});
+
+// タイトルチェックを実装できていない
+router.post('/edittitle', (req, res) => {
+    const query = "SELECT userId FROM videos WHERE videoId = ?";
+    let filename;
+    db.serialize(() => {
+        db.get(query, [req.body.videoId], (err, row) => {
+            if (err) {
+                console.log('db error:', err.message);
+                return res.status(500).json({ error: 'DB ERROR' });
+            }
+
+            // 編集権限があるかどうか
+            if (row.userId !== req.session.userId) {
+                return res.status(403).json({ error: 'ERROR' });
+            }
+
+            filename = row.filename;
+        });
+
+        db.run("UPDATE videos SET title = ? WHERE videoId = ?", [req.body.newTitle, req.body.videoId], (err) => {
+            if (err) {
+                console.log('db error:', err.message);
+                return res.status(500).json({ error: 'DB ERROR' });
+            }
+
+            res.status(200).json({ message: "deleted" });
+        });
+    });
 });
 
 router.post('/delete', (req, res) => {

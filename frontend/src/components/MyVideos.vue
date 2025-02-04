@@ -2,14 +2,25 @@
   <div>
     <h1>自分の録画</h1>
     <div v-for="video in videos" :key="video.id">
+      <hr>
       <p>{{ video.title }}</p>
-      <video :src="getVideoURL(video.filename)" controls width="320"></video>
+      <video :src="getVideoURL(video.id)" controls width="320"></video>
+      <br>
       <button @click="toggleVisibility(video.id)">
         {{ video.isPublic ? '非公開にする' : '公開にする' }}
       </button>
       <button @click="deleteVideo(video.id)">
         Delete
       </button>
+      <br>
+      <label>
+        edit title:
+        <input type="text" v-model="video.newTitle" placeholder="pleass input new title..." />
+        <button @click="editVideoTitle(video.id)">
+          Apply
+        </button>
+      </label>
+
     </div>
   </div>
 </template>
@@ -22,7 +33,7 @@ type Video = {
   id: number;
   userId: string;
   title: string;
-  filename: string;
+  newTitle: string;
   isPublic: boolean;
 };
 
@@ -64,6 +75,29 @@ export default defineComponent({
       }
     };
 
+    // 入力されたファイル名のチェックを実装できていない
+    const editVideoTitle = async (id: number) => {
+      const video = videos.value.find(v => v.id === id);
+      if (video === undefined) {
+        console.log("target video is not found");
+        return;
+      }
+
+      const body = {
+        videoId: video.id,
+        newTitle: video.newTitle,
+      };
+
+      try {
+        const res = await axios.post("http://localhost:3001/api/videos/edittitle", body, {
+          withCredentials: true,
+        });
+        fetchVideos();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
     const deleteVideo = async (id: number) => {
       const video = videos.value.find(v => v.id === id);
       if (video === undefined) {
@@ -78,25 +112,24 @@ export default defineComponent({
         axios.post("http://localhost:3001/api/videos/delete", body, {
           withCredentials: true,
         }).then(() => {
-          fetchVideos()
+          fetchVideos();
         });
       } catch (err) {
         console.error(err);
       }
     };
 
-    const getVideoURL = (filename: string) => {
-      return `http://localhost:3001/api/videos/${filename}`;
+
+
+    const getVideoURL = (id: string) => {
+      return `http://localhost:3001/api/videos/${id}`;
     };
-
-    
-
 
     onMounted(() => {
       fetchVideos();
     });
 
-    return { videos, toggleVisibility, getVideoURL, deleteVideo };
+    return { videos, toggleVisibility, getVideoURL, deleteVideo, editVideoTitle };
   }
 });
 </script>
