@@ -14,6 +14,10 @@
 import { defineComponent, onMounted, ref } from 'vue';
 import axios from 'axios';
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 type Video = {
   id: number;
   userId: string;
@@ -27,7 +31,7 @@ export default defineComponent({
 
     const fetchVideos = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/api/videos/publicvideos', {
+        const res = await axios.get(backend_addr + '/api/videos/publicvideos', {
           withCredentials: true,
         });
         videos.value = res.data;
@@ -38,7 +42,7 @@ export default defineComponent({
     };
 
     const getVideoURL = (id: string) => {
-      return `http://localhost:3001/api/videos/${id}`;
+      return backend_addr + `/api/videos/${id}`;
     };
 
     onMounted(() => {

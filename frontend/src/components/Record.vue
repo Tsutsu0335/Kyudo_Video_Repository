@@ -35,6 +35,10 @@ import { Pose, Results, POSE_CONNECTIONS } from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import axios from 'axios';
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 export default defineComponent({
   setup() {
     let pose: Pose | null = null;
@@ -169,7 +173,7 @@ export default defineComponent({
       formData.append('isPublic', String(isPublic.value));
 
       try {
-        await axios.post('http://localhost:3001/api/videos/upload', formData, {
+        await axios.post(backend_addr + '/api/videos/upload', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           withCredentials: true,
         });

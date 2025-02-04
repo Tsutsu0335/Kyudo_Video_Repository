@@ -19,10 +19,14 @@ const email = ref('');
 const password = ref('');
 const router = useRouter();
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 // 認証済みかの確認
 (async () => {
   try {
-    await axios.get('http://localhost:3001/auth/check', {
+    await axios.get(backend_addr + '/auth/check', {
       withCredentials: true,
     });
     router.push('/mypage');
@@ -37,7 +41,7 @@ const signup = async () => {
       email: email.value,
       password: password.value,
     }
-    const response = await axios.post('http://localhost:3001/auth/signup', body, {
+    const response = await axios.post(backend_addr + '/auth/signup', body, {
       headers: {
         'Content-Type': 'application/json'
       },

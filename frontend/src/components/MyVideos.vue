@@ -29,6 +29,10 @@
 import { defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 type Video = {
   id: number;
   userId: string;
@@ -43,7 +47,7 @@ export default defineComponent({
 
     const fetchVideos = async () => {
       try {
-        const res = await axios.get('http://localhost:3001/api/videos/myvideos', {
+        const res = await axios.get(backend_addr + `/api/videos/myvideos`, {
           withCredentials: true,
         });
         videos.value = res.data;
@@ -66,7 +70,7 @@ export default defineComponent({
       };
 
       try {
-        const res = await axios.post("http://localhost:3001/api/videos/setvisibility", body, {
+        const res = await axios.post(backend_addr + `/api/videos/setvisibility`, body, {
           withCredentials: true,
         });
         video.isPublic = res.data.result;
@@ -89,7 +93,7 @@ export default defineComponent({
       };
 
       try {
-        const res = await axios.post("http://localhost:3001/api/videos/edittitle", body, {
+        const res = await axios.post(backend_addr + "/api/videos/edittitle", body, {
           withCredentials: true,
         });
         fetchVideos();
@@ -109,7 +113,7 @@ export default defineComponent({
           videoId: video.id,
         };
 
-        axios.post("http://localhost:3001/api/videos/delete", body, {
+        axios.post(backend_addr + "/api/videos/delete", body, {
           withCredentials: true,
         }).then(() => {
           fetchVideos();
@@ -122,7 +126,7 @@ export default defineComponent({
 
 
     const getVideoURL = (id: string) => {
-      return `http://localhost:3001/api/videos/${id}`;
+      return backend_addr + `/api/videos/${id}`;
     };
 
     onMounted(() => {

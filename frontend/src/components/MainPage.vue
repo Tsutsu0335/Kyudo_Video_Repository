@@ -20,14 +20,18 @@ import axios from 'axios';
 const router = useRouter();
 const userEmail = ref('');
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 // 認証済みかの確認 (beforeCreate)
 (async () => {
   try {
-    await axios.get('http://localhost:3001/auth/check', {
+    await axios.get(backend_addr + `/auth/check`, {
       withCredentials: true,
     });
 
-    const response = await axios.get('http://localhost:3001/api/user', { withCredentials: true });
+    const response = await axios.get(backend_addr + `/api/user`, { withCredentials: true });
     userEmail.value = response.data.email;
   } catch (error) {
     console.error('error:', error);
@@ -37,7 +41,7 @@ const userEmail = ref('');
 
 const logout = async () => {
   try {
-    await axios.post('http://localhost:3001/auth/logout', {}, { withCredentials: true });
+    await axios.post(backend_addr + `/auth/logout`, {}, { withCredentials: true });
     router.push('/');
   } catch (error) {
     console.error('Failed to logout:', error);
