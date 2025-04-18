@@ -69,8 +69,7 @@ export default defineComponent({
     const setupPose = () => {
       pose = new Pose({
         locateFile: (file) =>
-          // `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-          `${backend_addr}/api/mediapipe/pose/${file}`,
+          `/@mediapipe/pose/${file}`,
         });
 
       pose.setOptions({
