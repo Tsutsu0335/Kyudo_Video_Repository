@@ -10,6 +10,10 @@ import { defineComponent, onMounted, onBeforeUnmount, ref } from 'vue';
 import { Pose, Results, POSE_CONNECTIONS } from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 
+const backend_host = import.meta.env.VITE_BACKEND_HOST;
+const backend_port = import.meta.env.VITE_BACKEND_PORT;
+const backend_addr = `http://${backend_host}:${backend_port}`;
+
 export default defineComponent({
   setup() {
     const videoElement = ref<HTMLVideoElement | null>(null);
@@ -32,8 +36,9 @@ export default defineComponent({
     const setupPose = () => {
       pose = new Pose({
         locateFile: (file) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-      });
+          // `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+          `${backend_addr}/api/mediapipe/pose/${file}`,
+        });
 
       pose.setOptions({
         modelComplexity: 1, // 高精度モデル

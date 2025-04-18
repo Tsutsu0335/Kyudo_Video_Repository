@@ -69,8 +69,9 @@ export default defineComponent({
     const setupPose = () => {
       pose = new Pose({
         locateFile: (file) =>
-          `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
-      });
+          // `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
+          `${backend_addr}/api/mediapipe/pose/${file}`,
+        });
 
       pose.setOptions({
         modelComplexity: 1, // 高精度モデル
