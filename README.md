@@ -3,11 +3,8 @@
 骨格推定まで入れたい
 Vue+Express+SQLite+Redis
 
-frontend (localhost:3000)  
-\$ yarn dev
+frontend (port:3000)  
+backend (port:3001)  
+redis-server (port:6379)  
 
-backend (localhost:3001)  
-\$ yarn dev
-
-redis (localhost:6379)  
-\$ docker run -d --name redis-server -p 6379:6379 redis
+\$ docker compose up
