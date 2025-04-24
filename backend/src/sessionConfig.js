@@ -22,7 +22,7 @@ const sessionMiddleware = session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        secure: false, // httpsに対応するときにtrueに変更
+        secure: true, 
         sameSite: 'lax',
         maxAge: 6 * 60 * 60 * 1000, // 6h
     },

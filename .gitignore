@@ -3,3 +3,4 @@ database/db.sqlite3
 .vscode
 dump.rdb
 frontend/certs/*
+backend/src/certs/*

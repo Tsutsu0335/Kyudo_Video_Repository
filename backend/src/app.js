@@ -4,6 +4,9 @@ const sessionMiddleware = require("./sessionConfig");
 const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api");
 const cookieParser = require("cookie-parser");
+const fs = require("fs");
+const path = require("path");
+const https = require("https");
 const sqlite3 = require('sqlite3').verbose();
 require("dotenv").config();
 
@@ -51,6 +54,11 @@ app.get("/", (req, res) => {
   res.send("SERVER IS RUNNING");
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://${process.env.SERVER_HOST}:${PORT}`);
-});
+https_server = https.createServer({
+  key: fs.readFileSync(path.join(__dirname, "./certs/server.key")),
+  cert: fs.readFileSync(path.join(__dirname, "./certs/server.crt")),
+}, app);
+
+https_server.listen(PORT, () => {
+  console.log(`Server is running on https://${process.env.SERVER_HOST}:${PORT}`);
+})

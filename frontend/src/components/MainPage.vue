@@ -22,7 +22,7 @@ const userEmail = ref('');
 
 const backend_host = import.meta.env.VITE_BACKEND_HOST;
 const backend_port = import.meta.env.VITE_BACKEND_PORT;
-const backend_addr = `http://${backend_host}:${backend_port}`;
+const backend_addr = `https://${backend_host}:${backend_port}`;
 
 // 認証済みかの確認 (beforeCreate)
 (async () => {
