@@ -34,7 +34,7 @@ db.run(`PRAGMA foreign_keys=true`);
 
 // フロントエンドのcors
 app.use(cors({
-    origin: `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
+  origin: [`http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`, `https://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`],
     credentials: true,
 }));
 
