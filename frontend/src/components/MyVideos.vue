@@ -4,7 +4,7 @@
     <div v-for="video in videos" :key="video.id">
       <hr>
       <p>{{ video.title }}</p>
-      <video :src="getVideoURL(video.id)" controls width="320"></video>
+      <video :src="getVideoURL(video.id.toString())" controls width="320"></video>
       <br>
       <button @click="toggleVisibility(video.id)">
         {{ video.isPublic ? '非公開にする' : '公開にする' }}
@@ -93,7 +93,7 @@ export default defineComponent({
       };
 
       try {
-        const res = await axios.post(backend_addr + "/api/videos/edittitle", body, {
+        await axios.post(backend_addr + "/api/videos/edittitle", body, {
           withCredentials: true,
         });
         fetchVideos();

@@ -31,7 +31,8 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, onBeforeUnmount, ref } from 'vue';
-import { Pose, Results, POSE_CONNECTIONS } from '@mediapipe/pose';
+import { Pose, POSE_CONNECTIONS } from '@mediapipe/pose';
+import type { Results } from '@mediapipe/pose';
 import { drawConnectors, drawLandmarks } from '@mediapipe/drawing_utils';
 import axios from 'axios';
 
@@ -86,16 +87,20 @@ export default defineComponent({
     const onResults = (results: Results) => {
       const canvasCtx = canvasElement.value?.getContext('2d');
       if (!canvasCtx || !videoElement.value) return;
+
+      const canvas_width = canvasElement.value ? canvasElement.value.width : 0;
+      const canvas_height = canvasElement.value ? canvasElement.value.height : 0;
+
       // Canvas をクリア
-      canvasCtx.clearRect(0, 0, canvasElement.value.width, canvasElement.value.height);
+      canvasCtx.clearRect(0, 0, canvas_width, canvas_height);
 
       // Video フィードを描画
       canvasCtx.drawImage(
         videoElement.value,
         0,
         0,
-        canvasElement.value.width,
-        canvasElement.value.height
+        canvas_width,
+        canvas_height
       );
 
       if (results.poseLandmarks) {

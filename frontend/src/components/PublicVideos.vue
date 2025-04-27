@@ -5,7 +5,7 @@
       <hr>
       <p>title: {{ video.title }}</p>
       <p>user: {{ video.userId }}</p>
-      <video :src="getVideoURL(video.id)" controls width="320"></video>
+      <video :src="getVideoURL(video.id.toString())" controls width="320"></video>
     </div>
   </div>
 </template>
