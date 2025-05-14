@@ -13,6 +13,8 @@ const db = new sqlite3.Database(process.env.DB_PATH);
 router.post('/signup', (req, res) => {
     const { email, password } = req.body;
 
+    console.log("try to signup: ", email);
+
     // 入力されたデータのチェック //
 
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -26,11 +28,13 @@ router.post('/signup', (req, res) => {
         // セッションの再生成
         req.session.regenerate((err) => {
             if (err) {
+                console.log("failed to signup: ", email);
                 return res.status(500).json({ message: 'セッションの生成に失敗しました。' });
             }
 
             req.session.userId = email; // cookieの保存
             res.status(201).json({ message: 'ユーザー登録完了！' });
+            console.log("signup: ", email);
         });
     });
 });
@@ -38,17 +42,20 @@ router.post('/signup', (req, res) => {
 // ログイン
 router.post('/login', (req, res) => {
     const { email, password } = req.body;
+    console.log("try to login: ", email);
 
     // エラーの種類による応答時間の差をなくす //
 
     db.get(`SELECT * FROM users WHERE email = ?`, [email], (err, user) => {
         //// 開発中のためエラーを分割 ////
         if (err || !user) {
+            console.log("failed to login: ", email);
             return res.status(400).json({ message: 'ユーザーが見つかりません。' });
         }
 
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid) {
+            console.log("failed to login: ", email);
             return res.status(400).json({ message: 'パスワードが間違っています。' });
         }
         //// 開発中のためエラーを分割 ////
@@ -56,11 +63,13 @@ router.post('/login', (req, res) => {
         // セッションの再生成
         req.session.regenerate((err) => {
             if (err) {
+                console.log("failed to login: ", email);
                 return res.status(500).json({ message: 'セッションの生成に失敗しました。' });
             }
 
             req.session.userId = email; // cookieの保存
             res.status(200).json({ message: 'ログイン成功！' });
+            console.log("login: ", email);
         });
 
     });

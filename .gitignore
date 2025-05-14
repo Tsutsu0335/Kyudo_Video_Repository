@@ -2,5 +2,5 @@ node_modules/
 database/db.sqlite3
 .vscode
 dump.rdb
-frontend/certs/*
+frontend/nginx/ssl/*
 backend/src/certs/*

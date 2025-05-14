@@ -9,8 +9,8 @@ export default defineConfig({
     host: true,
     port: 3000,
     https: {
-      key: fs.readFileSync("./certs/server.key"),
-      cert: fs.readFileSync("./certs/server.crt"),
+      key: fs.readFileSync("./nginx/ssl/server.key"),
+      cert: fs.readFileSync("./nginx/ssl/server.crt"),
     }
   },
   resolve: {
